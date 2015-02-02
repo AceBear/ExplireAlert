@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="sdv7">
+  <DataContextMoniker Name="/sdv7DataContext" />
+  <nestedChildShapes>
+    <classShape Id="f729052a-c6ba-40be-8121-e0cfa7348099" absoluteBounds="1, 0.5, 2, 1.9068933105468751">
+      <DataClassMoniker Name="/sdv7DataContext/Gsp_shouying_qyshb" />
+      <nestedChildShapes>
+        <elementListCompartment Id="d7a71945-cef9-406f-8f30-abd10e44672e" absoluteBounds="1.0149999999999997, 0.96, 1.9700000000000002, 1.346893310546875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

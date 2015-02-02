@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="SDV7" Class="sdv7DataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=(LocalDB)\winphone;Initial Catalog=SDV7;Integrated Security=True" SettingsObjectName="ExpireAlert.Properties.Settings" SettingsPropertyName="SDV7ConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Gsp_shouying_qyshb" Member="Gsp_shouying_qyshbs">
+    <Type Name="Gsp_shouying_qyshb">
+      <Column Name="xuhao" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="daima" Type="System.String" DbType="VarChar(11)" CanBeNull="true" />
+      <Column Name="mingcheng" Type="System.String" DbType="VarChar(40) NOT NULL" CanBeNull="false" />
+      <Column Name="dizhi" Type="System.String" DbType="VarChar(60)" CanBeNull="true" />
+      <Column Name="dianhua" Type="System.String" DbType="VarChar(30)" CanBeNull="true" />
+      <Column Name="youxiao_rq_xk" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>
