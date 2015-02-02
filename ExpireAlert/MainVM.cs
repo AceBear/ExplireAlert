@@ -120,8 +120,14 @@ namespace ExpireAlert
                 OnPropertyChanged("Icon");
 
                 // event log
-                this.m_logEA.WriteEntry(String.Format("检查结果: 过期{0}个, 即将过期{1}个.", this.m_nExpired, this.m_nAlarmed), EventLogEntryType.Information);
+                var msg = String.Format("检查结果: 过期{0}个, 即将过期{1}个.", this.m_nExpired, this.m_nAlarmed);
+                this.m_logEA.WriteEntry(msg, EventLogEntryType.Information);
                 OnPropertyChanged("Title");
+
+                if (this.m_nExpired > 0 || this.m_nAlarmed > 0) {
+                    var wechat = new WeChat();
+                    wechat.Notify();
+                }
 
             }, null);
         }
