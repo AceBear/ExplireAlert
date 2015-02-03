@@ -126,7 +126,7 @@ namespace ExpireAlert
 
                 if (this.m_nExpired > 0 || this.m_nAlarmed > 0) {
                     var wechat = new WeChat();
-                    wechat.Notify();
+                    wechat.Notify(this.m_bizCheck.AlarmedList);
                 }
 
             }, null);

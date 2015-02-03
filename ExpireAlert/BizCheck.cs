@@ -44,12 +44,23 @@ namespace ExpireAlert
             this.DateAlarm = this.DateExpired + TimeSpan.FromDays(this.PreAlarmDays);
 
             using (var ctx = new sdv7DataContext()) {
+                // index
+                this.CreateIndexA(ctx);
+
+                // query
                 var query = from c in ctx.GetTable<Gsp_shouying_qyshb>()
                             where c.youxiao_rq_xk <= this.DateAlarm
                             orderby c.youxiao_rq_xk
                             select c;
                 this.AlarmedList = query.ToList();
             }
+        }
+
+        protected void CreateIndexA(sdv7DataContext ctx)
+        {
+            string sqlCmd = "IF NOT EXISTS(SELECT * FROM sys.sysindexes WHERE name = 'idx_Gsp_shouying_qyshb__youxiao_rq_xk')\n" +
+                "\tCREATE INDEX idx_Gsp_shouying_qyshb__youxiao_rq_xk ON Gsp_shouying_qyshb(youxiao_rq_xk)";
+            ctx.ExecuteCommand(sqlCmd);
         }
     }
 }

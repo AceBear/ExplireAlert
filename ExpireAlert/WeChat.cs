@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -17,47 +18,67 @@ namespace ExpireAlert
 
         }
 
-        public void Notify()
+        public void Notify(IEnumerable<Gsp_shouying_qyshb> listAlarms)
         {
-            try
+            if (listAlarms != null && listAlarms.Count() > 0)
             {
-                var client = new HttpClient();
-                // 1. Get the AccessToken
-                var uriToken = new Uri("http://dev.incardata.com.cn/srv/s/1/AccessToken");
-                client.GetStringAsync(uriToken).ContinueWith((taskToken) =>
+                string strTitle = "许可证即将到期";
+                var sbContent = new StringBuilder();
+                var sbRemark = new StringBuilder();
+                foreach(var x in listAlarms)
                 {
-                    var token = JsonConvert.DeserializeObject(taskToken.Result) as JObject;
-
-                    var templateId = "hy9lTGSM7Tu-YN8kDNQXvejJ3hUWXD5OhV1Rq45uGJE";
-
-                    // 2. Send message
-                    var uriMsg = String.Format("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={0}", token.GetValue("token"));
-                    var dataMsg = JsonConvert.SerializeObject(new
+                    if (x.IsExpired)
                     {
-                        touser = "oAPKMuJssQAohcEgKyKkcRDUDiAw",
-                        template_id = templateId,
-                        url = "www.baidu.com",
-                        topcolor = "#FF0000",
-                        data = new
-                        {
-                            first = new { value = "许可证到期告警", color = "#173177" },
-                            content = new { value = "许可证XXX已到期", color = "#173177" },
-                            occurtime = new { value = "2015-01-16", color = "#173177" },
-                            remark = new { value = "其它未尽事宜", color = "#173177" },
-                        }
-                    });
-                    client.PostAsync(uriMsg, new StringContent(dataMsg)).ContinueWith((taskMsg) =>
+                        sbContent.AppendFormat("{0}[{1:yyyy-MM-dd}]\n", x.mingcheng, x.youxiao_rq_xk);
+                        strTitle = "许可证已到期";
+                    }
+                    else if (x.IsAlarmed)
                     {
-                        taskMsg.Result.Content.ReadAsStringAsync().ContinueWith((taskSendResult) =>
+                        if (sbRemark.Length == 0) sbRemark.AppendLine("\n以下许可证也即将到期:");
+                        sbRemark.AppendFormat("{0}[{1:yyyy-MM-dd}]\n", x.mingcheng, x.youxiao_rq_xk);
+                    }
+                }
+
+                try
+                {
+                    var client = new HttpClient();
+                    // 1. Get the AccessToken
+                    var uriToken = new Uri("http://dev.incardata.com.cn/srv/s/1/AccessToken");
+                    client.GetStringAsync(uriToken).ContinueWith((taskToken) =>
+                    {
+                        var token = JsonConvert.DeserializeObject(taskToken.Result) as JObject;
+                        var templateId = ConfigurationManager.AppSettings["wxNotifyId"];
+
+                        // 2. Send message
+                        var uriMsg = String.Format("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={0}", token.GetValue("token"));
+                        var dataMsg = JsonConvert.SerializeObject(new
                         {
-                            System.Diagnostics.Trace.WriteLine(taskSendResult.Result);
+                            touser = "oAPKMuJssQAohcEgKyKkcRDUDiAw", // XGH
+                            template_id = templateId,
+                            url = "",
+                            topcolor = "#FF0000",
+                            data = new
+                            {
+                                first = new { value = strTitle, color = "#FF3333" },
+                                content = new { value = sbContent.ToString(), color = "#FF3333" },
+                                occurtime = new { value = DateTime.Today.ToString("yyyy年M月d日"), color = "#FF3333" },
+                                remark = new { value = sbRemark.ToString(), color = "#FF7700" },
+                            }
+                        });
+                        client.PostAsync(uriMsg, new StringContent(dataMsg)).ContinueWith((taskMsg) =>
+                        {
+                            taskMsg.Result.Content.ReadAsStringAsync().ContinueWith((taskSendResult) =>
+                            {
+                                System.Diagnostics.Trace.WriteLine(taskSendResult.Result);
+                            });
                         });
                     });
-                });
 
-            }
-            catch (Exception ex) {
-                System.Diagnostics.Trace.WriteLine(ex.ToString());
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.WriteLine(ex.ToString());
+                }
             }
         }
     }
