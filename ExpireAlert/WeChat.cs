@@ -20,6 +20,9 @@ namespace ExpireAlert
 
         public void Notify(IEnumerable<Gsp_shouying_qyshb> listAlarms)
         {
+            // 免打扰时间不发送消息
+            if (WechatConfigSection.Current.DoNotDisturb()) return;
+
             if (listAlarms != null && listAlarms.Count() > 0)
             {
                 string strTitle = "许可证即将到期";
@@ -62,7 +65,7 @@ namespace ExpireAlert
                                     touser = usr.OpenId, // XGH
                                     template_id = templateId,
                                     url = "",
-                                    topcolor = "#FF0000",
+                                    topcolor = "#FF7700",
                                     data = new
                                     {
                                         first = new { value = strTitle, color = "#FF3333" },

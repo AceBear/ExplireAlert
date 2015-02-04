@@ -18,6 +18,13 @@ namespace ExpireAlert
             set { base["NotifyTemplateId"] = value; }
         }
 
+        [ConfigurationProperty("notDisturb")]
+        public string notDisturb
+        {
+            get { return (string)base["notDisturb"]; }
+            set { base["notDisturb"] = value; }
+        }
+
 
         [ConfigurationProperty("users", IsDefaultCollection=true)]
         [ConfigurationCollection(typeof(WechatUserCollection),
@@ -25,6 +32,20 @@ namespace ExpireAlert
         public WechatUserCollection Users
         {
             get { return (WechatUserCollection)base["users"]; }
+        }
+
+        public bool DoNotDisturb()
+        {
+            int nHourNow = DateTime.Now.Hour;
+            int nHourNotDisturb;
+            foreach (string strHour in this.notDisturb.Split(','))
+            {
+                if (Int32.TryParse(strHour, out nHourNotDisturb)) {
+                    if (nHourNow == nHourNotDisturb) return true;
+                }
+            }
+
+            return false;
         }
     }
 
