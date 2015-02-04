@@ -54,6 +54,14 @@ namespace ExpireAlert
                             orderby c.youxiao_rq_xk
                             select c;
                 this.AlarmedList = query.ToList();
+
+                // top 10 not expired or alarmed
+                var queryNext10 = from c in ctx.GetTable<Gsp_shouying_qyshb>()
+                                  where c.youxiao_rq_xk >= this.DateAlarm
+                                  orderby c.youxiao_rq_xk
+                                  select c;
+                var listNext10 = queryNext10.Take(10).ToList();
+                this.AlarmedList = this.AlarmedList.Concat(listNext10);
             }
         }
 
