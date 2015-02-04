@@ -33,6 +33,9 @@ namespace ExpireAlert
     partial void InsertGsp_shouying_qyshb(Gsp_shouying_qyshb instance);
     partial void UpdateGsp_shouying_qyshb(Gsp_shouying_qyshb instance);
     partial void DeleteGsp_shouying_qyshb(Gsp_shouying_qyshb instance);
+    partial void Insertwx_notify(wx_notify instance);
+    partial void Updatewx_notify(wx_notify instance);
+    partial void Deletewx_notify(wx_notify instance);
     #endregion
 		
 		public sdv7DataContext() : 
@@ -70,6 +73,14 @@ namespace ExpireAlert
 			get
 			{
 				return this.GetTable<Gsp_shouying_qyshb>();
+			}
+		}
+		
+		public System.Data.Linq.Table<wx_notify> wx_notifies
+		{
+			get
+			{
+				return this.GetTable<wx_notify>();
 			}
 		}
 	}
@@ -231,6 +242,116 @@ namespace ExpireAlert
 					this._youxiao_rq_xk = value;
 					this.SendPropertyChanged("youxiao_rq_xk");
 					this.Onyouxiao_rq_xkChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="winphone.wx_notify")]
+	public partial class wx_notify : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _md5;
+		
+		private string _openid;
+		
+		private System.Nullable<System.DateTime> _tm;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onmd5Changing(string value);
+    partial void Onmd5Changed();
+    partial void OnopenidChanging(string value);
+    partial void OnopenidChanged();
+    partial void OntmChanging(System.Nullable<System.DateTime> value);
+    partial void OntmChanged();
+    #endregion
+		
+		public wx_notify()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_md5", DbType="Char(32) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string md5
+		{
+			get
+			{
+				return this._md5;
+			}
+			set
+			{
+				if ((this._md5 != value))
+				{
+					this.Onmd5Changing(value);
+					this.SendPropertyChanging();
+					this._md5 = value;
+					this.SendPropertyChanged("md5");
+					this.Onmd5Changed();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_openid", DbType="Char(28) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string openid
+		{
+			get
+			{
+				return this._openid;
+			}
+			set
+			{
+				if ((this._openid != value))
+				{
+					this.OnopenidChanging(value);
+					this.SendPropertyChanging();
+					this._openid = value;
+					this.SendPropertyChanged("openid");
+					this.OnopenidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_tm", DbType="SmallDateTime")]
+		public System.Nullable<System.DateTime> tm
+		{
+			get
+			{
+				return this._tm;
+			}
+			set
+			{
+				if ((this._tm != value))
+				{
+					this.OntmChanging(value);
+					this.SendPropertyChanging();
+					this._tm = value;
+					this.SendPropertyChanged("tm");
+					this.OntmChanged();
 				}
 			}
 		}

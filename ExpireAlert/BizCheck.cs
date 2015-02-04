@@ -45,7 +45,7 @@ namespace ExpireAlert
 
             using (var ctx = new sdv7DataContext()) {
                 // index
-                this.CreateIndexA(ctx);
+                this.AlterDatabase(ctx);
 
                 // query
                 var query = from c in ctx.GetTable<Gsp_shouying_qyshb>()
@@ -56,10 +56,21 @@ namespace ExpireAlert
             }
         }
 
-        protected void CreateIndexA(sdv7DataContext ctx)
+        protected void AlterDatabase(sdv7DataContext ctx)
         {
             string sqlCmd = "IF NOT EXISTS(SELECT * FROM sys.sysindexes WHERE name = 'idx_Gsp_shouying_qyshb__youxiao_rq_xk')\n" +
                 "\tCREATE INDEX idx_Gsp_shouying_qyshb__youxiao_rq_xk ON Gsp_shouying_qyshb(youxiao_rq_xk)";
+            ctx.ExecuteCommand(sqlCmd);
+
+            sqlCmd = "IF(SCHEMA_ID(N'winphone') IS NULL) EXEC sp_executesql N'CREATE SCHEMA winphone'";
+            ctx.ExecuteCommand(sqlCmd);
+
+            sqlCmd = "IF OBJECT_ID(N'winphone.wx_notify', N'U') IS NULL\n" +
+                "CREATE TABLE winphone.wx_notify(\n" +
+                "md5 CHAR(32) NOT NULL,\n" +
+                "openid CHAR(28) NOT NULL,\n" +
+                "tm SMALLDATETIME DEFAULT GetDate(),\n" +
+                "CONSTRAINT PK_WX_NOTIFY primary key (md5, openid))";
             ctx.ExecuteCommand(sqlCmd);
         }
     }

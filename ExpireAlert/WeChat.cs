@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,7 +16,6 @@ namespace ExpireAlert
     {
         public WeChat()
         {
-
         }
 
         public void Notify(IEnumerable<Gsp_shouying_qyshb> listAlarms)
@@ -51,30 +51,61 @@ namespace ExpireAlert
 
                         var wechatCfg = WechatConfigSection.Current;
                         var templateId = wechatCfg.NotifyTemplateId;
-                        foreach (WechatUser usr in wechatCfg.Users)
+
+                        using (var ctx = new sdv7DataContext())
                         {
-                            // 2. Send message
-                            var dataMsg = JsonConvert.SerializeObject(new
+                            foreach (WechatUser usr in wechatCfg.Users)
                             {
-                                touser = usr.OpenId, // XGH
-                                template_id = templateId,
-                                url = "",
-                                topcolor = "#FF0000",
-                                data = new
+                                // 2. Prepare message
+                                var dataMsg = JsonConvert.SerializeObject(new
                                 {
-                                    first = new { value = strTitle, color = "#FF3333" },
-                                    content = new { value = sbContent.ToString(), color = "#FF3333" },
-                                    occurtime = new { value = DateTime.Today.ToString("yyyy年M月d日"), color = "#FF3333" },
-                                    remark = new { value = sbRemark.ToString(), color = "#FF7700" },
-                                }
-                            });
-                            client.PostAsync(uriMsg, new StringContent(dataMsg)).ContinueWith((taskMsg) =>
-                            {
-                                taskMsg.Result.Content.ReadAsStringAsync().ContinueWith((taskSendResult) =>
-                                {
-                                    System.Diagnostics.Trace.WriteLine(taskSendResult.Result);
+                                    touser = usr.OpenId, // XGH
+                                    template_id = templateId,
+                                    url = "",
+                                    topcolor = "#FF0000",
+                                    data = new
+                                    {
+                                        first = new { value = strTitle, color = "#FF3333" },
+                                        content = new { value = sbContent.ToString(), color = "#FF3333" },
+                                        occurtime = new { value = DateTime.Today.ToString("yyyy年M月d日"), color = "#FF3333" },
+                                        remark = new { value = sbRemark.ToString(), color = "#FF7700" },
+                                    }
                                 });
-                            });
+
+                                // 3. Check if send already
+                                var md5 = MakeMD5(dataMsg);
+                                var querySendAlready = from log in ctx.GetTable<wx_notify>()
+                                                       where log.md5 == md5 && log.openid == usr.OpenId
+                                                       select log;
+                                if (querySendAlready.Any()) continue;
+
+                                // 4. Send out
+                                client.PostAsync(uriMsg, new StringContent(dataMsg)).ContinueWith((taskMsg) =>
+                                {
+                                    taskMsg.Result.Content.ReadAsStringAsync().ContinueWith((taskSendResult) =>
+                                    {
+                                        if (taskSendResult.Result != null)
+                                        {
+                                            var sent = JsonConvert.DeserializeObject(taskSendResult.Result) as JObject;
+                                            if (sent.Value<int>("errcode") == 0)
+                                            {
+                                                // 5. Log it
+                                                using (var ctx2 = new sdv7DataContext())
+                                                {
+                                                    var log = new wx_notify() {
+                                                        md5 = md5,
+                                                        openid = usr.OpenId,
+                                                        tm = DateTime.Today
+                                                    };
+                                                    ctx2.GetTable<wx_notify>().InsertOnSubmit(log);
+                                                    ctx2.SubmitChanges();
+                                                }
+                                            }
+                                        }
+                                        
+                                    });
+                                });
+                            }
                         }
                     });
 
@@ -83,6 +114,18 @@ namespace ExpireAlert
                 {
                     System.Diagnostics.Trace.WriteLine(ex.ToString());
                 }
+            }
+        }
+
+        private string MakeMD5(string strSource)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] md5Data = md5.ComputeHash(Encoding.UTF8.GetBytes(strSource));
+                var sb = new StringBuilder();
+                foreach (var c in md5Data)
+                    sb.Append(c.ToString("x2"));
+                return sb.ToString();
             }
         }
     }
