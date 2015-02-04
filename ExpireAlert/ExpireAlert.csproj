@@ -99,6 +99,7 @@
       <DependentUpon>sdv7.dbml</DependentUpon>
     </Compile>
     <Compile Include="WeChat.cs" />
+    <Compile Include="WechatConfigSection.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

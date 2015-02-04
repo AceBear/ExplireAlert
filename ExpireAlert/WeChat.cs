@@ -47,31 +47,35 @@ namespace ExpireAlert
                     client.GetStringAsync(uriToken).ContinueWith((taskToken) =>
                     {
                         var token = JsonConvert.DeserializeObject(taskToken.Result) as JObject;
-                        var templateId = ConfigurationManager.AppSettings["wxNotifyId"];
-
-                        // 2. Send message
                         var uriMsg = String.Format("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={0}", token.GetValue("token"));
-                        var dataMsg = JsonConvert.SerializeObject(new
+
+                        var wechatCfg = WechatConfigSection.Current;
+                        var templateId = wechatCfg.NotifyTemplateId;
+                        foreach (WechatUser usr in wechatCfg.Users)
                         {
-                            touser = "oAPKMuJssQAohcEgKyKkcRDUDiAw", // XGH
-                            template_id = templateId,
-                            url = "",
-                            topcolor = "#FF0000",
-                            data = new
+                            // 2. Send message
+                            var dataMsg = JsonConvert.SerializeObject(new
                             {
-                                first = new { value = strTitle, color = "#FF3333" },
-                                content = new { value = sbContent.ToString(), color = "#FF3333" },
-                                occurtime = new { value = DateTime.Today.ToString("yyyy年M月d日"), color = "#FF3333" },
-                                remark = new { value = sbRemark.ToString(), color = "#FF7700" },
-                            }
-                        });
-                        client.PostAsync(uriMsg, new StringContent(dataMsg)).ContinueWith((taskMsg) =>
-                        {
-                            taskMsg.Result.Content.ReadAsStringAsync().ContinueWith((taskSendResult) =>
-                            {
-                                System.Diagnostics.Trace.WriteLine(taskSendResult.Result);
+                                touser = usr.OpenId, // XGH
+                                template_id = templateId,
+                                url = "",
+                                topcolor = "#FF0000",
+                                data = new
+                                {
+                                    first = new { value = strTitle, color = "#FF3333" },
+                                    content = new { value = sbContent.ToString(), color = "#FF3333" },
+                                    occurtime = new { value = DateTime.Today.ToString("yyyy年M月d日"), color = "#FF3333" },
+                                    remark = new { value = sbRemark.ToString(), color = "#FF7700" },
+                                }
                             });
-                        });
+                            client.PostAsync(uriMsg, new StringContent(dataMsg)).ContinueWith((taskMsg) =>
+                            {
+                                taskMsg.Result.Content.ReadAsStringAsync().ContinueWith((taskSendResult) =>
+                                {
+                                    System.Diagnostics.Trace.WriteLine(taskSendResult.Result);
+                                });
+                            });
+                        }
                     });
 
                 }
