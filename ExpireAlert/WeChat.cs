@@ -55,7 +55,7 @@ namespace ExpireAlert
                         var wechatCfg = WechatConfigSection.Current;
                         var templateId = wechatCfg.NotifyTemplateId;
 
-                        using (var ctx = new sdv7DataContext())
+                        using (var ctx = new sdv7DataContext(ConfigurationManager.ConnectionStrings["sdv7"].ConnectionString))
                         {
                             foreach (WechatUser usr in wechatCfg.Users)
                             {
@@ -93,7 +93,7 @@ namespace ExpireAlert
                                             if (sent.Value<int>("errcode") == 0)
                                             {
                                                 // 5. Log it
-                                                using (var ctx2 = new sdv7DataContext())
+                                                using (var ctx2 = new sdv7DataContext(ConfigurationManager.ConnectionStrings["sdv7"].ConnectionString))
                                                 {
                                                     var log = new wx_notify() {
                                                         md5 = md5,

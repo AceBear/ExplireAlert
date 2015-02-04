@@ -43,7 +43,8 @@ namespace ExpireAlert
 
             this.DateAlarm = this.DateExpired + TimeSpan.FromDays(this.PreAlarmDays);
 
-            using (var ctx = new sdv7DataContext()) {
+            using (var ctx = new sdv7DataContext(ConfigurationManager.ConnectionStrings["sdv7"].ConnectionString))
+            {
                 // index
                 this.AlterDatabase(ctx);
 

@@ -8,9 +8,9 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ExpireAlert")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("许可证过期告警")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("闻风多奇")]
 [assembly: AssemblyProduct("ExpireAlert")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]

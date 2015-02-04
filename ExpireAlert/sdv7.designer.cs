@@ -39,7 +39,7 @@ namespace ExpireAlert
     #endregion
 		
 		public sdv7DataContext() : 
-				base(global::ExpireAlert.Properties.Settings.Default.SDV7ConnectionString, mappingSource)
+				base("Data Source=(LocalDB)\\winphone;Initial Catalog=SDV7;Integrated Security=True", mappingSource)
 		{
 			OnCreated();
 		}
