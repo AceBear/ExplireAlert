@@ -267,7 +267,7 @@ namespace ExpireAlert
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="winphone.wx_notify")]
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.wx_notify")]
 	public partial class wx_notify : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		

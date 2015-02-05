@@ -68,17 +68,17 @@ namespace ExpireAlert
         protected void AlterDatabase(sdv7DataContext ctx)
         {
             // 构建索引,以提速查询过期许可证
-            string sqlCmd = "IF NOT EXISTS(SELECT * FROM sys.sysindexes WHERE name = 'idx_Gsp_shouying_qyshb__youxiao_rq_xk')\n" +
-                "\tCREATE INDEX idx_Gsp_shouying_qyshb__youxiao_rq_xk ON Gsp_shouying_qyshb(youxiao_rq_xk)";
-            ctx.ExecuteCommand(sqlCmd);
+            // string sqlCmd = "IF NOT EXISTS(SELECT * FROM sys.sysindexes WHERE name = 'idx_Gsp_shouying_qyshb__youxiao_rq_xk')\n" +
+            //     "\tCREATE INDEX idx_Gsp_shouying_qyshb__youxiao_rq_xk ON Gsp_shouying_qyshb(youxiao_rq_xk)";
+            // ctx.ExecuteCommand(sqlCmd);
 
             // 创建winphone schema,隔离本应用专用数据
-            sqlCmd = "IF(SCHEMA_ID(N'winphone') IS NULL) EXEC sp_executesql N'CREATE SCHEMA winphone'";
-            ctx.ExecuteCommand(sqlCmd);
+            // sqlCmd = "IF(SCHEMA_ID(N'winphone') IS NULL) EXEC sp_executesql N'CREATE SCHEMA winphone'";
+            // ctx.ExecuteCommand(sqlCmd);
 
             // 创建winphone.wx_notify表,记录成功发送的微信消息
-            sqlCmd = "IF OBJECT_ID(N'winphone.wx_notify', N'U') IS NULL\n" +
-                "CREATE TABLE winphone.wx_notify(\n" +
+            string sqlCmd = "IF OBJECT_ID(N'wx_notify', N'U') IS NULL\n" +
+                "CREATE TABLE wx_notify(\n" +
                 "md5 CHAR(32) NOT NULL,\n" +
                 "openid CHAR(28) NOT NULL,\n" +
                 "tm SMALLDATETIME DEFAULT GetDate(),\n" +
@@ -87,7 +87,7 @@ namespace ExpireAlert
 
             // 删除一年以前的旧记录
             DateTime tmOneYearBefore = DateTime.Today - TimeSpan.FromDays(365.0);
-            sqlCmd = "DELETE FROM winphone.wx_notify WHERE tm < {0}";
+            sqlCmd = "DELETE FROM wx_notify WHERE tm < {0}";
             ctx.ExecuteCommand(sqlCmd, tmOneYearBefore);
         }
     }
